@@ -153,7 +153,7 @@ XMPP Notify Plugin for Icinga 2 (should work with nagios etc.)
         notification_servicename = "$service.name$"
         notification_serviceoutput = "$service.output$"
         notification_servicestate = "$service.state$"
-        notification_useremail = "$user.email$"
+        notification_useremail = "$user.vars.xmpp$"
         notification_servicedisplayname = "$service.display_name$"
       }
     }
