@@ -2,8 +2,10 @@ XMPP Notify Plugin for Icinga 2 (should work with nagios etc.)
 
 # Installation
 
-* Copy xmppnotify.py to /etc/icinga2/scripts/xmppnotify.py
-* Copy xmppnotify.sample.cfg to /etc/xmppnotify.cfg and enter xmpp credentials
+* Copy `xmppnotify.py` to `/etc/icinga2/scripts/`
+* Copy `xmppnotify.sample.cfg` to `/etc/xmppnotify.cfg`
+  and enter xmpp credentials
+* Copy `commands-xmppnotify.conf` to `/etc/icinga2/conf.d/`.
 
 # Icinga2 configuration
 
@@ -35,10 +37,6 @@ XMPP Notify Plugin for Icinga 2 (should work with nagios etc.)
         notification_icingaweb2url = "https://monitoring.finnchristiansen.de/icingaweb2"
       }
     }
-
-## Commands
-
-* Copy `commands-xmppnotify.conf` to `/etc/icinga2/conf.d/`.
 
 
 ## Notifications
