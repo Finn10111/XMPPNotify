@@ -31,11 +31,10 @@ def build_message(args):
         # service
         message = """[{notificationtype}] {servicedisplayname} on {hostdisplayname} is {servicestate}!
 
-Info:    {serviceoutput}
+Info: {serviceoutput}
 
-When:    {longdatetime}
-Service: {servicename}
-Host:    {hostname}
+When: {longdatetime}
+Ref: {hostname}!{servicename}
 Monitoring host: {monitoringhostname}\
 """.format(
             notificationtype=args.notificationtype,
@@ -51,10 +50,10 @@ Monitoring host: {monitoringhostname}\
     else:
         message = """[{notificationtype}] {hostdisplayname} is {hoststate}!
 
-Info:    {hostoutput}
+Info: {hostoutput}
 
-When:    {longdatetime}
-Host:    {hostname}
+When: {longdatetime}
+Ref: {hostname}
 Monitoring host: {monitoringhostname}\
 """.format(
             notificationtype=args.notificationtype,
