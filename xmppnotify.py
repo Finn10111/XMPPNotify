@@ -29,16 +29,16 @@ class XMPPNotify(ClientXMPP):
 def build_message(args):
     if args.servicename:
         # service
-        message = """***** Service Monitoring on {monitoringhostname} *****
-
-{servicedisplayname} on {hostdisplayname} is {servicestate}!
+        message = """[{notificationtype}] {servicedisplayname} on {hostdisplayname} is {servicestate}!
 
 Info:    {serviceoutput}
 
 When:    {longdatetime}
 Service: {servicename}
 Host:    {hostname}
+Monitoring host: {monitoringhostname}\
 """.format(
+            notificationtype=args.notificationtype,
             monitoringhostname=gethostname(),
             servicedisplayname=args.servicedisplayname,
             hostdisplayname=args.hostdisplayname,
@@ -49,15 +49,15 @@ Host:    {hostname}
             hostname=args.hostname
         )
     else:
-        message = """***** Host Monitoring on {monitoringhostname} *****
-
-{hostdisplayname} is {hoststate}!
+        message = """[{notificationtype}] {hostdisplayname} is {hoststate}!
 
 Info:    {hostoutput}
 
 When:    {longdatetime}
 Host:    {hostname}
+Monitoring host: {monitoringhostname}\
 """.format(
+            notificationtype=args.notificationtype,
             monitoringhostname=gethostname(),
             hostdisplayname=args.hostdisplayname,
             hoststate=args.state,
