@@ -66,14 +66,14 @@ Monitoring host: {monitoringhostname}\
         )
 
     if args.hostaddress:
-        message += "\nIPv4:    {}".format(args.hostaddress)
+        message += "\nIPv4: {}".format(args.hostaddress)
 
     if args.hostaddress6:
-        message += "\nIPv6:    {}".format(args.hostaddress6)
+        message += "\nIPv6: {}".format(args.hostaddress6)
 
     if args.notificationcomment:
-        message += """
-        \nComment by {notificationauthorname}
+        message += """\n
+Comment by {notificationauthorname}
  {notificationcomment}
 """.format(
             notificationauthorname=args.notificationauthorname,
