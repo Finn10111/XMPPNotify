@@ -97,13 +97,9 @@ Comment by {notificationauthorname}
     return message
 
 
-if __name__ == '__main__':
-    config = configparser.RawConfigParser()
-    config.read('/etc/xmppnotify.cfg')
-    jid = config.get('Account', 'jid')
-    password = config.get('Account', 'password')
-
+def build_argparser():
     parser = argparse.ArgumentParser(description='XMPP Notifications')
+
     # required
     parser.add_argument('-d', '--longdatetime')
     parser.add_argument('-e', '--servicename')  # service only
@@ -122,6 +118,16 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--notificationcomment')
     parser.add_argument('-i', '--icingaweb2url')
 
+    return parser
+
+
+if __name__ == '__main__':
+    config = configparser.RawConfigParser()
+    config.read('/etc/xmppnotify.cfg')
+    jid = config.get('Account', 'jid')
+    password = config.get('Account', 'password')
+
+    parser = build_argparser()
     args = parser.parse_args()
     message = build_message(args)
 
