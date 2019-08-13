@@ -27,12 +27,16 @@ class XMPPNotify(ClientXMPP):
 
 
 def build_message(args):
+    # Prefix all output lines by "> "
+    if args.output:
+        output = "> " + args.output.replace("\n", "\n> ")
+    else:
+        output = ""
+
     if args.servicename:
         # service
         message = """[{notificationtype}] {servicedisplayname} on {hostdisplayname} is {servicestate}!
-
-Info: {serviceoutput}
-
+{output}
 When: {longdatetime}
 Ref: {hostname}!{servicename}
 Monitoring host: {monitoringhostname}\
@@ -42,16 +46,14 @@ Monitoring host: {monitoringhostname}\
             servicedisplayname=args.servicedisplayname,
             hostdisplayname=args.hostdisplayname,
             servicestate=args.state,
-            serviceoutput=args.output,
+            output=output,
             longdatetime=args.longdatetime,
             servicename=args.servicename,
             hostname=args.hostname
         )
     else:
         message = """[{notificationtype}] {hostdisplayname} is {hoststate}!
-
-Info: {hostoutput}
-
+{output}
 When: {longdatetime}
 Ref: {hostname}
 Monitoring host: {monitoringhostname}\
@@ -60,7 +62,7 @@ Monitoring host: {monitoringhostname}\
             monitoringhostname=gethostname(),
             hostdisplayname=args.hostdisplayname,
             hoststate=args.state,
-            hostoutput=args.output,
+            output=output,
             longdatetime=args.longdatetime,
             hostname=args.hostname
         )
@@ -72,12 +74,14 @@ Monitoring host: {monitoringhostname}\
         message += "\nIPv6: {}".format(args.hostaddress6)
 
     if args.notificationcomment:
+        # Prefix comment lines by "> "
+        comment = "> " + args.notificationcomment.replace("\n", "\n> ")
         message += """\n
 Comment by {notificationauthorname}
- {notificationcomment}
+{comment}
 """.format(
             notificationauthorname=args.notificationauthorname,
-            notificationcomment=args.notificationcomment
+            comment=comment
         )
 
     if args.icingaweb2url and args.servicename:
