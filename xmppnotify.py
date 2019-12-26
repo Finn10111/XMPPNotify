@@ -27,58 +27,61 @@ class XMPPNotify(ClientXMPP):
 
 
 def build_message(args):
+    # Prefix all output lines by "> "
+    if args.output:
+        output = "> " + args.output.replace("\n", "\n> ")
+    else:
+        output = ""
+
     if args.servicename:
         # service
-        message = """***** Service Monitoring on {monitoringhostname} *****
-
-{servicedisplayname} on {hostdisplayname} is {servicestate}!
-
-Info:    {serviceoutput}
-
-When:    {longdatetime}
-Service: {servicename}
-Host:    {hostname}
+        message = """[{notificationtype}] {servicedisplayname} on {hostdisplayname} is {servicestate}!
+{output}
+When: {longdatetime}
+Ref: {hostname}!{servicename}
+Monitoring host: {monitoringhostname}\
 """.format(
+            notificationtype=args.notificationtype,
             monitoringhostname=gethostname(),
             servicedisplayname=args.servicedisplayname,
             hostdisplayname=args.hostdisplayname,
             servicestate=args.state,
-            serviceoutput=args.output,
+            output=output,
             longdatetime=args.longdatetime,
             servicename=args.servicename,
             hostname=args.hostname
         )
     else:
-        message = """***** Host Monitoring on {monitoringhostname} *****
-
-{hostdisplayname} is {hoststate}!
-
-Info:    {hostoutput}
-
-When:    {longdatetime}
-Host:    {hostname}
+        message = """[{notificationtype}] {hostdisplayname} is {hoststate}!
+{output}
+When: {longdatetime}
+Ref: {hostname}
+Monitoring host: {monitoringhostname}\
 """.format(
+            notificationtype=args.notificationtype,
             monitoringhostname=gethostname(),
             hostdisplayname=args.hostdisplayname,
             hoststate=args.state,
-            hostoutput=args.output,
+            output=output,
             longdatetime=args.longdatetime,
             hostname=args.hostname
         )
 
     if args.hostaddress:
-        message += "\nIPv4:    {}".format(args.hostaddress)
+        message += "\nIPv4: {}".format(args.hostaddress)
 
     if args.hostaddress6:
-        message += "\nIPv6:    {}".format(args.hostaddress6)
+        message += "\nIPv6: {}".format(args.hostaddress6)
 
     if args.notificationcomment:
-        message += """
-        \nComment by {notificationauthorname}
- {notificationcomment}
+        # Prefix comment lines by "> "
+        comment = "> " + args.notificationcomment.replace("\n", "\n> ")
+        message += """\n
+Comment by {notificationauthorname}
+{comment}
 """.format(
             notificationauthorname=args.notificationauthorname,
-            notificationcomment=args.notificationcomment
+            comment=comment
         )
 
     if args.icingaweb2url and args.servicename:
@@ -98,13 +101,9 @@ Host:    {hostname}
     return message
 
 
-if __name__ == '__main__':
-    config = configparser.RawConfigParser()
-    config.read('/etc/xmppnotify.cfg')
-    jid = config.get('Account', 'jid')
-    password = config.get('Account', 'password')
-
+def build_argparser():
     parser = argparse.ArgumentParser(description='XMPP Notifications')
+
     # required
     parser.add_argument('-d', '--longdatetime')
     parser.add_argument('-e', '--servicename')  # service only
@@ -123,6 +122,16 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--notificationcomment')
     parser.add_argument('-i', '--icingaweb2url')
 
+    return parser
+
+
+if __name__ == '__main__':
+    config = configparser.RawConfigParser()
+    config.read('/etc/xmppnotify.cfg')
+    jid = config.get('Account', 'jid')
+    password = config.get('Account', 'password')
+
+    parser = build_argparser()
     args = parser.parse_args()
     message = build_message(args)
 
