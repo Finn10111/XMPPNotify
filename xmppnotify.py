@@ -19,7 +19,7 @@ class XMPPNotify(ClientXMPP):
     def session_start(self, event):
         self.send_presence()
         self.get_roster()
-        self.send_message(mto=self.recipient, mbody=self.msg)
+        self.send_message(mto=self.recipient, mbody=self.msg, mtype='chat')
         self.disconnect()
 
     def message(self, msg):
