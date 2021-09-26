@@ -7,19 +7,40 @@ import configparser
 from slixmpp import ClientXMPP
 from socket import gethostname
 
-
 class XMPPNotify(ClientXMPP):
-    def __init__(self, jid, password, recipient, msg):
+    def __init__(self, jid, password, nick, recipient, msg):
         ClientXMPP.__init__(self, jid, password)
         self.recipient = recipient
         self.msg = msg
+        self.nick = nick
         self.add_event_handler("session_start", self.session_start)
         # self.add_event_handler("message", self.message)
 
-    def session_start(self, event):
+
+    async def session_start(self, event):
         self.send_presence()
-        self.get_roster()
-        self.send_message(mto=self.recipient, mbody=self.msg, mtype='chat')
+        await self.get_roster()
+
+        recipient_type = "account"
+        try:
+            info = await self['xep_0030'].get_info(jid=self.recipient)
+            disco_info=info['disco_info']
+            if disco_info:
+                for category, typ, _, name in disco_info['identities']:
+                    if category == "conference":
+                        recipient_type = "muc"
+                        break
+        except:
+            # Some servers do not support Service Discovery (XEP-0030)
+            # Assume they don't support MUCs (XEP-0045) as well
+            pass
+
+        if recipient_type == "muc":
+            self.plugin['xep_0045'].join_muc(self.recipient, self.nick)
+            self.send_message(mto=self.recipient, mbody=self.msg, mtype='groupchat')
+        else:
+            self.send_message(mto=self.recipient, mbody=self.msg, mtype='chat')
+
         self.disconnect()
 
     def message(self, msg):
@@ -130,14 +151,16 @@ if __name__ == '__main__':
     config.read('/etc/xmppnotify.cfg')
     jid = config.get('Account', 'jid')
     password = config.get('Account', 'password')
+    nick = config.get('Account', 'nick', fallback = jid.split("@")[0])
 
     parser = build_argparser()
     args = parser.parse_args()
     message = build_message(args)
 
-    xmpp = XMPPNotify(jid, password, args.jid, message)
+    xmpp = XMPPNotify(jid, password, nick, args.jid, message)
     xmpp.register_plugin('xep_0030')  # Service Discovery
     xmpp.register_plugin('xep_0004')  # Data Forms
+    xmpp.register_plugin('xep_0045')  # MUC
     xmpp.register_plugin('xep_0060')  # PubSub
     xmpp.register_plugin('xep_0199')  # XMPP Ping
 
