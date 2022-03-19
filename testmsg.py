@@ -11,7 +11,8 @@ commonargs = \
      "--hostaddress", "127.0.0.1",
      "--hostaddress6", "::1",
      "--icingaweb2url", "ICINGAWEB2URL",
-     "--state", "STATE", "--longdatetime", "2019-12-31 23:59:59"]
+     "--state", "STATE", "--longdatetime", "2019-12-31 23:59:59",
+     "--jid", "recipient@exmaple.net"]
 
 if __name__ == '__main__':
     parser = build_argparser()

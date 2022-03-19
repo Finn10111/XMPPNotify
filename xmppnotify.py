@@ -16,7 +16,6 @@ class XMPPNotify(ClientXMPP):
         self.add_event_handler("session_start", self.session_start)
         # self.add_event_handler("message", self.message)
 
-
     async def session_start(self, event):
         self.send_presence()
         await self.get_roster()
@@ -125,13 +124,17 @@ Comment by {notificationauthorname}
 def build_argparser():
     parser = argparse.ArgumentParser(description='XMPP Notifications')
 
+    # General config
+    parser.add_argument('-C', '--config', dest='configfile',
+                        default='/etc/xmppnotify.cfg',
+                        help='Account configuration file (%(default)s)')
+
     # required
     parser.add_argument('-d', '--longdatetime')
     parser.add_argument('-e', '--servicename')  # service only
     parser.add_argument('-l', '--hostname')
     parser.add_argument('-n', '--hostdisplayname')
     parser.add_argument('-o', '--output')  # host or service output
-    parser.add_argument('-r', '--jid')
     parser.add_argument('-s', '--state')  # host or service state
     parser.add_argument('-u', '--servicedisplayname')  # service only
     parser.add_argument('-t', '--notificationtype')
@@ -143,18 +146,22 @@ def build_argparser():
     parser.add_argument('-c', '--notificationcomment')
     parser.add_argument('-i', '--icingaweb2url')
 
+    parser.add_argument('-r', '--jid', required=True,
+                        help="Target JID")
+
     return parser
 
 
 if __name__ == '__main__':
+    parser = build_argparser()
+    args = parser.parse_args()
+
     config = configparser.RawConfigParser()
-    config.read('/etc/xmppnotify.cfg')
+    config.read(args.configfile)
     jid = config.get('Account', 'jid')
     password = config.get('Account', 'password')
     nick = config.get('Account', 'nick', fallback = jid.split("@")[0])
 
-    parser = build_argparser()
-    args = parser.parse_args()
     message = build_message(args)
 
     xmpp = XMPPNotify(jid, password, nick, args.jid, message)
