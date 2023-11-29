@@ -35,7 +35,7 @@ class XMPPNotify(ClientXMPP):
             pass
 
         if recipient_type == "muc":
-            self.plugin['xep_0045'].join_muc(self.recipient, self.nick)
+            await self.plugin['xep_0045'].join_muc_wait(self.recipient, self.nick)
             self.send_message(mto=self.recipient, mbody=self.msg, mtype='groupchat')
         else:
             self.send_message(mto=self.recipient, mbody=self.msg, mtype='chat')
